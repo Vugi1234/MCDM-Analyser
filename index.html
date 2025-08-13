@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCDM Analysis Platform - Professional Decision Support</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <h1>MCDM Analysis Platform</h1>
+                </div>
+                <nav class="nav">
+                    <button class="nav-link active" data-section="home">Home</button>
+                    <button class="nav-link" data-section="analysis">Analysis</button>
+                    <button class="nav-link" data-section="about">About</button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <!-- Home Section -->
+        <section id="home" class="section active">
+            <div class="container">
+                <div class="hero">
+                    <div class="hero-content">
+                        <h1>Multi-Criteria Decision Making</h1>
+                        <p class="hero-subtitle">Professional analytical platform for complex decision-making using proven MCDM methodologies</p>
+                        
+                        <div class="methods-grid">
+                            <div class="method-card">
+                                <h3>TOPSIS</h3>
+                                <p>Technique for Order Preference by Similarity to Ideal Solution</p>
+                            </div>
+                            <div class="method-card">
+                                <h3>EDAS</h3>
+                                <p>Evaluation based on Distance from Average Solution</p>
+                            </div>
+                            <div class="method-card">
+                                <h3>WSM</h3>
+                                <p>Weighted Sum Model for direct comparison</p>
+                            </div>
+                            <div class="method-card">
+                                <h3>WPM</h3>
+                                <p>Weighted Product Model for multiplicative approach</p>
+                            </div>
+                        </div>
+
+                        <button class="btn btn--primary btn--lg" id="start-analysis-btn">Start Analysis</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Analysis Section -->
+        <section id="analysis" class="section">
+            <div class="container">
+                <div class="analysis-container">
+                    <!-- Step Navigation -->
+                    <div class="step-nav">
+                        <div class="step active" data-step="1">
+                            <span class="step-number">1</span>
+                            <span class="step-label">Setup</span>
+                        </div>
+                        <div class="step" data-step="2">
+                            <span class="step-number">2</span>
+                            <span class="step-label">Names</span>
+                        </div>
+                        <div class="step" data-step="3">
+                            <span class="step-number">3</span>
+                            <span class="step-label">Data</span>
+                        </div>
+                        <div class="step" data-step="4">
+                            <span class="step-number">4</span>
+                            <span class="step-label">Weights</span>
+                        </div>
+                        <div class="step" data-step="5">
+                            <span class="step-number">5</span>
+                            <span class="step-label">Method</span>
+                        </div>
+                        <div class="step" data-step="6">
+                            <span class="step-number">6</span>
+                            <span class="step-label">Results</span>
+                        </div>
+                    </div>
+
+                    <!-- Step 1: Setup -->
+                    <div class="step-content active" id="step-1">
+                        <div class="card">
+                            <div class="card__header">
+                                <h2>Initial Setup</h2>
+                                <p>Define the number of alternatives and criteria for your analysis</p>
+                            </div>
+                            <div class="card__body">
+                                <!-- Excel Import Section -->
+                                <div class="import-section">
+                                    <h3>Import Data from Excel</h3>
+                                    <div class="import-controls">
+                                        <input type="file" id="excel-file-input" accept=".xlsx,.xls" class="file-input">
+                                        <button id="import-excel-btn" class="btn btn--secondary">Import Excel File</button>
+                                        <span id="import-status" class="import-status"></span>
+                                    </div>
+                                    <p class="import-help">Upload an Excel file with alternatives in rows and criteria in columns. First row should contain criteria names, first column should contain alternative names.</p>
+                                </div>
+
+                                <div class="divider">
+                                    <span>OR</span>
+                                </div>
+
+                                <div class="manual-setup">
+                                    <h3>Manual Setup</h3>
+                                    <div class="form-group">
+                                        <label class="form-label" for="num-alternatives">Number of Alternatives</label>
+                                        <input type="number" id="num-alternatives" class="form-control" min="2" max="50" value="5">
+                                        <small class="help-text">The options you want to compare (e.g., projects, products, strategies)</small>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="num-criteria">Number of Criteria</label>
+                                        <input type="number" id="num-criteria" class="form-control" min="2" max="20" value="5">
+                                        <small class="help-text">The factors to evaluate each alternative against</small>
+                                    </div>
+                                </div>
+                                
+                                <button class="btn btn--primary" onclick="setupAnalysis()">Continue</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Names -->
+                    <div class="step-content" id="step-2">
+                        <div class="card">
+                            <div class="card__header">
+                                <h2>Define Names</h2>
+                                <p>Provide meaningful names for your alternatives and criteria</p>
+                            </div>
+                            <div class="card__body">
+                                <div class="names-grid">
+                                    <div class="names-section">
+                                        <h3>Alternatives</h3>
+                                        <div id="alternativeNames"></div>
+                                    </div>
+                                    <div class="names-section">
+                                        <h3>Criteria</h3>
+                                        <div id="criteriaNames"></div>
+                                    </div>
+                                </div>
+                                <div class="step-actions">
+                                    <button class="btn btn--outline" onclick="prevStep()">Back</button>
+                                    <button class="btn btn--primary" onclick="nextStep()">Continue</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Data Entry -->
+                    <div class="step-content" id="step-3">
+                        <div class="card">
+                            <div class="card__header">
+                                <h2>Performance Data</h2>
+                                <p>Enter the performance values for each alternative against each criterion</p>
+                            </div>
+                            <div class="card__body">
+                                <div class="criteria-types">
+                                    <h3>Criteria Type</h3>
+                                    <p>Mark each criterion as beneficial (higher is better) or non-beneficial (lower is better)</p>
+                                    <div class="criteria-type-grid" id="criteria-types-container">
+                                        <!-- Will be populated dynamically -->
+                                    </div>
+                                </div>
+                                
+                                <div class="data-table-container">
+                                    <h3>Performance Matrix</h3>
+                                    <div id="dataMatrix"></div>
+                                </div>
+                                
+                                <div class="step-actions">
+                                    <button class="btn btn--outline" onclick="prevStep()">Back</button>
+                                    <button class="btn btn--primary" onclick="nextStep()">Continue</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 4: Weights -->
+                    <div class="step-content" id="step-4">
+                        <div class="card">
+                            <div class="card__header">
+                                <h2>Criteria Weights</h2>
+                                <p>Adjust the importance weights for each criterion (weights will be normalized automatically)</p>
+                            </div>
+                            <div class="card__body">
+                                <div class="weight-options">
+                                    <label class="form-label">
+                                        <input type="radio" name="weightMethod" value="equal" checked>
+                                        Equal Weights
+                                    </label>
+                                    <label class="form-label">
+                                        <input type="radio" name="weightMethod" value="custom">
+                                        Custom Weights
+                                    </label>
+                                    <label class="form-label">
+                                        <input type="radio" name="weightMethod" value="entropy">
+                                        Entropy Weights (Calculated)
+                                    </label>
+                                </div>
+                                
+                                <div id="weightsContainer"></div>
+                                
+                                <div class="step-actions">
+                                    <button class="btn btn--outline" onclick="prevStep()">Back</button>
+                                    <button class="btn btn--primary" onclick="nextStep()">Continue</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 5: Method Selection -->
+                    <div class="step-content" id="step-5">
+                        <div class="card">
+                            <div class="card__header">
+                                <h2>Analysis Method</h2>
+                                <p>Choose the MCDM method for your analysis</p>
+                            </div>
+                            <div class="card__body">
+                                <div class="method-selection">
+                                    <div class="method-option">
+                                        <label class="method-label">
+                                            <input type="radio" name="method" value="TOPSIS" checked>
+                                            <div class="method-info">
+                                                <h4>TOPSIS</h4>
+                                                <p>Ranks alternatives based on distance from ideal and negative-ideal solutions. Best for well-defined criteria with clear preferences.</p>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    <div class="method-option">
+                                        <label class="method-label">
+                                            <input type="radio" name="method" value="EDAS">
+                                            <div class="method-info">
+                                                <h4>EDAS</h4>
+                                                <p>Evaluates alternatives based on distances from average solution. Effective for balanced decision-making scenarios.</p>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    <div class="method-option">
+                                        <label class="method-label">
+                                            <input type="radio" name="method" value="WSM">
+                                            <div class="method-info">
+                                                <h4>WSM</h4>
+                                                <p>Simple weighted sum approach. Best for linear relationships and straightforward comparisons.</p>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    <div class="method-option">
+                                        <label class="method-label">
+                                            <input type="radio" name="method" value="WPM">
+                                            <div class="method-info">
+                                                <h4>WPM</h4>
+                                                <p>Weighted product model for multiplicative relationships. Good for criteria with interdependencies.</p>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div class="step-actions">
+                                    <button class="btn btn--outline" onclick="prevStep()">Back</button>
+                                    <button class="btn btn--primary" onclick="runAnalysis()">
+                                        <span class="btn-text">Run Analysis</span>
+                                        <span class="btn-spinner hidden">
+                                            <span class="spinner"></span>
+                                        </span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 6: Results -->
+                    <div class="step-content" id="step-6">
+                        <div class="results-container">
+                            <div class="results-header">
+                                <h2>Analysis Results</h2>
+                                <p id="methodUsed"></p>
+                            </div>
+                            
+                            <div class="top-recommendations">
+                                <div class="recommendation-card winner">
+                                    <div class="rank-badge">1st</div>
+                                    <div class="recommendation-content">
+                                        <h3 id="winner-name">Best Alternative</h3>
+                                        <p id="winner-score">Score: --</p>
+                                    </div>
+                                </div>
+                                <div class="recommendation-card runner-up">
+                                    <div class="rank-badge">2nd</div>
+                                    <div class="recommendation-content">
+                                        <h3 id="runner-up-name">Second Best</h3>
+                                        <p id="runner-up-score">Score: --</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="results-tables">
+                                <div class="card">
+                                    <div class="card__header">
+                                        <h3>Complete Rankings</h3>
+                                    </div>
+                                    <div class="card__body">
+                                        <div id="rankingsTable"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="card">
+                                    <div class="card__header">
+                                        <h3>Detailed Scores</h3>
+                                    </div>
+                                    <div class="card__body">
+                                        <div id="scoresTable"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="results-actions">
+                                <button class="btn btn--outline" onclick="exportResults()">Export Results</button>
+                                <button class="btn btn--secondary" onclick="startNew()">New Analysis</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="section">
+            <div class="container">
+                <div class="about-content">
+                    <h1>About MCDM Platform</h1>
+                    <p>This platform provides comprehensive multi-criteria decision-making analysis using industry-standard methodologies.</p>
+                    
+                    <div class="features-grid">
+                        <div class="feature">
+                            <h3>Professional Analysis</h3>
+                            <p>Industry-standard MCDM methods implemented with scientific rigor</p>
+                        </div>
+                        <div class="feature">
+                            <h3>Excel Import</h3>
+                            <p>Easy data import from Excel spreadsheets with automatic parsing</p>
+                        </div>
+                        <div class="feature">
+                            <h3>Clean Results</h3>
+                            <p>Clear tables and rankings to understand your analysis outcomes</p>
+                        </div>
+                        <div class="feature">
+                            <h3>Export Capabilities</h3>
+                            <p>Download your results for presentations and reports</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Loading Modal -->
+    <div id="loadingModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="loading-spinner">
+                <div class="spinner-large"></div>
+                <h3>Processing Analysis</h3>
+                <p>Calculating optimal solution using selected MCDM method...</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
